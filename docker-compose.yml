@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    # volumes:
+    #   - ./backend:/app
+    environment:
+      - SMTP_HOST=smtp.example.com
+      - SMTP_USER=youruser
+      - SMTP_PASS=yourpass
+      - NODE_ENV=development
+      - ANSIBLE_REMOTE_HOST=your.remote.host
+      - ANSIBLE_REMOTE_USER=your_ssh_user
+      - ANSIBLE_REMOTE_KEY=/app/ssh/id_rsa
+      - ANSIBLE_REMOTE_PORT=22
+      - BASIC_AUTH_USER=admin
+      - BASIC_AUTH_PASS=${BASIC_AUTH_PASS}
+    volumes:
+      - backend-db-data:/app/src/db
+      - ./path/to/id_rsa:/app/ssh/id_rsa:ro
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "3500:3000"
+    depends_on:
+      - backend
+
+volumes:
+  backend-db-data:
+
