@@ -4,6 +4,7 @@ const { sendEmail } = require('../email/send');
 const { NodeSSH } = require('node-ssh');
 const config = require('../config');
 const { DEPLOY_ENVS } = require('../envs');
+const { sendJobNotification } = require('../api/jobs');
 
 const scheduledTasks = new Map();
 
@@ -30,6 +31,7 @@ async function runAndLogJob(job) {
     output = `Invalid environment: ${job.env}`;
     await db.addLog({ jobId: job.id, runAt, status, output });
     await updateJobRun(job.id, runAt, status);
+    await sendJobNotification(job, 'failed', { runAt, output });
     return;
   }
   try {
@@ -42,8 +44,10 @@ async function runAndLogJob(job) {
   }
   await db.addLog({ jobId: job.id, runAt, status, output });
   await updateJobRun(job.id, runAt, status);
-  if (job.email) {
-    await sendEmail(job.email, `Job ${job.name} ${status}`, `Job ran at ${runAt}\nStatus: ${status}\nOutput:\n${output}`);
+  if (status === 'success') {
+    await sendJobNotification(job, 'success', { runAt, output });
+  } else {
+    await sendJobNotification(job, 'failed', { runAt, output });
   }
 }
 

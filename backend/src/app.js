@@ -32,12 +32,12 @@ app.get('/', (req, res) => {
   res.send('Job Scheduler Backend is running.');
 });
 
-app.get('/envs', (req, res) => {
+app.get('/api/envs', (req, res) => {
   res.json(DEPLOY_ENVS.map(({ key, name }) => ({ key, name })));
 });
 
-app.use('/jobs', jobsRouter);
-app.use('/deploy', deployRouter);
+app.use('/api/jobs', jobsRouter);
+app.use('/api/deploy', deployRouter);
 
 // Start scheduler
 scheduler.start();
