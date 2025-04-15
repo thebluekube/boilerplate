@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 const config = require('../config');
 
 async function sendEmail(to, subject, text) {
+  console.log(`[sendEmail] Preparing to send email`, { to, subject });
   const transporter = nodemailer.createTransport({
     host: config.smtp.host,
     port: 25,
@@ -17,8 +18,10 @@ async function sendEmail(to, subject, text) {
       subject,
       text,
     });
+    console.log(`[sendEmail] Email sent successfully`, { to, subject, messageId: info.messageId, response: info.response });
     return { success: true, info };
   } catch (err) {
+    console.error(`[sendEmail] Failed to send email`, { to, subject, error: err.message, stack: err.stack });
     return { success: false, error: err.message };
   }
 }
