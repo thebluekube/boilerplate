@@ -4,7 +4,7 @@ const { sendEmail } = require('../email/send');
 const { NodeSSH } = require('node-ssh');
 const config = require('../config');
 const { DEPLOY_ENVS } = require('../envs');
-const { sendJobNotification } = require('../api/jobs');
+const sendJobNotification = require('../email/jobNotification').sendJobNotification;
 
 const scheduledTasks = new Map();
 
